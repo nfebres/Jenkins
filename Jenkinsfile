@@ -111,5 +111,5 @@ def deployApp(String version, String user, String pwd) {
 
 def sendBuildNotification() {
     // Send build notification (e.g., email, Slack message)
-    mail to: 'team@example.com', subject: 'Build Notification', body: 'Build completed'
+    mail to: 'example@example.com', subject: 'Build Notification', body: 'Build completed'
 }
