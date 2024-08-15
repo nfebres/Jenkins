@@ -39,3 +39,16 @@ The Jenkinsfile can be customized to fit your specific project requirements. Her
 - **Stage Conditions**: Adjust the `when` conditions for each stage based on your branching strategy or other criteria.
 - **Stage Steps**: Modify the steps within each stage to include your project-specific build, test, and deployment commands.
 - **Shared Library**: Update the `@Library` annotation to point to your shared library repository, if applicable.
+
+## Jenkins Resources
+
+### Jenkins Documentation and Tutorials
+
+The [Jenkins website](https://www.jenkins.io/) and the [official documentation](https://www.jenkins.io/doc/) contain numerous examples and templates that cover various use cases and pipeline setups.
+
+### GitHub Repositories
+
+Many open-source projects on GitHub use Jenkins for continuous integration and continuous delivery (CI/CD). You can find Jenkinsfile examples in these repositories:
+
+- [Jenkins Pipeline Examples](https://github.com/jenkinsci/pipeline-examples)
+- [Jenkins Shared Library Example](https://github.com/jenkinsci/global-shared-library-example)
