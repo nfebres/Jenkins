@@ -40,8 +40,44 @@ The Jenkinsfile can be customized to fit your specific project requirements. Her
 - **Stage Steps**: Modify the steps within each stage to include your project-specific build, test, and deployment commands.
 - **Shared Library**: Update the `@Library` annotation to point to your shared library repository, if applicable.
 
-## Jenkins Resources
 
+## Setting Environment Variables
+
+This project uses environment variables for configuring certain settings, such as the SonarQube host URL. Before running the application or the Jenkins pipeline, make sure to set the following environment variable:
+
+- `SONAR_HOST_URL`: The URL of your SonarQube server (e.g., `http://sonarqube.example.com`).
+
+### Local Environment
+
+#### Unix-based systems (Linux, macOS)
+
+```bash
+export SONAR_HOST_URL=http://sonarqube.example.com
+mvn clean package
+```
+
+##### For windows
+```
+set SONAR_HOST_URL=http://sonarqube.example.com
+mvn clean package
+```
+
+##### In Jenkins Pipeline
+```
+pipeline {
+    // ...
+    stage('Build') {
+        steps {
+            withEnv(['SONAR_HOST_URL=http://sonarqube.example.com']) {
+                sh 'mvn clean package'
+            }
+        }
+    }
+    // ...
+}
+```
+
+## Jenkins Resources
 ### Jenkins Documentation and Tutorials
 
 The [Jenkins website](https://www.jenkins.io/) and the [official documentation](https://www.jenkins.io/doc/) contain numerous examples and templates that cover various use cases and pipeline setups.
