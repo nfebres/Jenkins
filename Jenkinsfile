@@ -1,7 +1,3 @@
-// Load shared library
-// @Library('my-shared-library') _
-
-// Define pipeline
 pipeline {
     agent any
 
@@ -10,68 +6,69 @@ pipeline {
         jdk 'java'
     }
 
-    parameters {
-        string(name: 'VERSION', defaultValue: '', description: 'Version to deploy on prod')
-        booleanParam(name: 'EXECUTE_TESTS', defaultValue: true, description: 'Execute tests')
-    }
-
     environment {
-        SERVER_CREDENTIALS = credentials('server-credentials')
+        SONAR_QUBE_SERVER = 'Your SonarQube Server'
+        DEPENDENCY_CHECK_TOOL = 'OWASP Dependency-Check'
+        SERVER_CREDENTIALS = 'your-server-credentials-id'
     }
 
     stages {
-        stage('Initialize') {
-            steps {
-                script {
-                    gv = load 'script.groovy'
-                    buildProperties = readProperties interpolate: true, file: 'build.properties'
-                    buildProperties.each { prop ->
-                        env."${prop.key.toUpperCase()}" = prop.value
-                    }
-                }
-            }
-        }
-
         stage('Build') {
-            when {
-                anyOf {
-                    branch 'PR-*'
-                    branch 'master'
-                }
-            }
             steps {
-                script {
-                    def buildVersion = getBuildVersion()
-                    echo "Building the application for version ${buildVersion}"
-                    buildApp(buildVersion)
-                }
+                sh 'mvn clean package'
             }
         }
 
         stage('Test') {
-            when {
-                anyOf {
-                    branch 'dev'
-                    equals expected: true, actual: params.EXECUTE_TESTS
-                }
-            }
             steps {
-                script {
-                    testApp()
-                }
+                sh 'mvn test'
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarQube Server') {
+                withSonarQubeEnv(env.SONAR_QUBE_SERVER) {
                     sh 'mvn sonar:sonar'
                 }
             }
         }
 
+        stage('Dependency Scanning') {
+            steps {
+                dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: env.DEPENDENCY_CHECK_TOOL
+            }
+            post {
+                always {
+                    publishHTML([
+                        allowMissingReports: false,
+                        alwaysLinkToLastBuild: false,
+                        keepAll: true,
+                        reportDir: 'target',
+                        reportFiles: 'dependency-check-report.html',
+                        reportName: 'OWASP Dependency Report',
+                        reportTitles: ''
+                    ])
+                    archiveArtifacts artifacts: 'target/dependency-check-report.xml'
+                }
+            }
+        }
 
-
+        // stage('Dependency Scanning') {
+        //     steps {
+        //         script {
+        //             // Running the dependency scanning tool
+        //             sh 'snyk test --json > snyk_report.json'
+        //         }
+        //     }
+        //     post {
+        //         always {
+        //             archiveArtifacts artifacts: 'snyk_report.json', fingerprint: true
+        //         }
+        //         failure {
+        //             error 'Dependency scanning failed with vulnerabilities'
+        //         }
+        //     }
+        // }
 
         stage('Deploy') {
             steps {
@@ -101,26 +98,22 @@ pipeline {
 
 // Helper functions
 def getBuildVersion() {
-    // Fetch the build version from a properties file or a build parameter
     return '1.0.1'
 }
 
 def buildApp(String version) {
-    // Build the application using the provided version
     sh "mvn clean package -Dversion=${version}"
 }
 
 def testApp() {
-    // Execute test cases
     sh 'mvn test'
 }
 
 def deployApp(String version, String user, String pwd) {
-    // Deploy the application using the provided version and credentials
     sh "deploy.sh ${version} ${user} ${pwd}"
 }
 
 def sendBuildNotification() {
-    // Send build notification (e.g., email, Slack message)
+    // Send build notification
     mail to: 'example@example.com', subject: 'Build Notification', body: 'Build completed'
 }

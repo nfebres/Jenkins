@@ -1,5 +1,5 @@
 # Jenkins
-# My Project CI/CD Pipeline
+# CI/CD Pipeline
 
 This repository contains a Jenkinsfile that defines a continuous integration and continuous deployment (CI/CD) pipeline for a Java Project application. The pipeline automates the build, test, and deployment processes, ensuring a streamlined and consistent delivery workflow.
 
@@ -11,7 +11,8 @@ The pipeline consists of the following stages:
 2. **Build**: This stage builds the application using Maven and packages the artifacts.
 3. **Test**: This stage executes the unit and integration tests for the application.
 4. **SonarQube Analysis**: Runs the SonarQube analysis using the `mvn sonar:sonar` command and sends the analysis results to the configured SonarQube server.
-5. **Deploy**: This stage deploys the application to the production environment.
+5. **Dependency Scanning**: using OWASP Dependency-Check: An open-source tool for scanning Java, .NET, and Node.js dependencies. You can also use snyk.
+6. **Deploy**: This stage deploys the application to the production environment.
 
 ## Prerequisites
 
@@ -26,6 +27,8 @@ Before running the pipeline, ensure that you have the following prerequisites se
 
 The Jenkins pipeline includes a stage for running SonarQube analysis on the codebase. SonarQube is a code quality and security analysis tool that helps identify potential issues, technical debt, and code smells in your codebase.
 
+In the Jenkinsfile, The `withSonarQubeEnv` function is a step provided by the SonarQube plugin for Jenkins. It is used to set up the environment variables required for running SonarQube analysis within the Jenkins pipeline. These environment variables are then used by the SonarQube Scanner for Maven ( sonar-maven-plugin) to communicate with the SonarQube server and perform the analysis
+
 ### Prerequisites
 
 Before running the SonarQube analysis stage, ensure that you have the following prerequisites set up:
@@ -35,6 +38,7 @@ Before running the SonarQube analysis stage, ensure that you have the following 
 2. **SonarQube Scanner for Maven**: The `sonar-maven-plugin` dependency is included in the project's `pom.xml` file, which allows you to run SonarQube analysis using Maven.
 
 3. **SonarQube Server Configuration in Jenkins**: In your Jenkins instance, you need to configure the SonarQube server details, such as the server URL, authentication token (or username and password), and any other required information. This configuration is typically done in the "Manage Jenkins" > "Configure System" section.
+
 
 ### Running SonarQube Analysis
 
@@ -122,3 +126,6 @@ Many open-source projects on GitHub use Jenkins for continuous integration and c
 
 - [Jenkins Pipeline Examples](https://github.com/jenkinsci/pipeline-examples)
 - [Jenkins Shared Library Example](https://github.com/jenkinsci/global-shared-library-example)
+
+#### SonarQube
+[SonarQube Jenkins Info](https://www.jenkins.io/doc/pipeline/steps/sonar/)
